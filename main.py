@@ -2,7 +2,6 @@ import sys
 import pygame
 
 from classes.player import Player
-from classes.road import Road
 from constants import clock as clock_constants
 from constants import player as player_constants
 from constants import pygame as screen_constants
@@ -13,7 +12,6 @@ screen = pygame.display.set_mode((screen_constants.WIDTH, screen_constants.HEIGH
 pygame.display.set_caption("Self-driving Car")
 
 player = Player(100, 100, 30, 50)
-road = Road(0, screen_constants.WIDTH)
 clock = pygame.time.Clock()
 
 running = True
