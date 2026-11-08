@@ -1,0 +1,4 @@
+SCREEN_COLOR: str = "BLACK"
+
+WIDTH: int = 800
+HEIGHT: int = 600
