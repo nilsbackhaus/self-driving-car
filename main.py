@@ -11,7 +11,8 @@ pygame.init()
 screen = pygame.display.set_mode((screen_constants.WIDTH, screen_constants.HEIGHT), vsync = 1)
 pygame.display.set_caption("Self-driving Car")
 
-player = Player(100, 100, 30, 50)
+player = Player((screen_constants.WIDTH // 6), (screen_constants.HEIGHT // 2), 20, 40)
+track = pygame.image.load("assets/track.png").convert_alpha()
 clock = pygame.time.Clock()
 
 running = True
@@ -36,6 +37,7 @@ while running:
     player.update_position()
     
     screen.fill(screen_constants.SCREEN_COLOR)
+    screen.blit(track, (0, 0))
     player.draw(screen)
     pygame.display.flip()
 

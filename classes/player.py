@@ -11,7 +11,7 @@ class Player:
         self.height = height
 
         self.speed = 0.0
-        self.angle = float(math.pi)
+        self.angle = 0.0
         self.acceleration = player_constants.ACCELERATION
         self.friction = player_constants.FRICTION
         self.maximum_speed = player_constants.MAXIMUM_SPEED
