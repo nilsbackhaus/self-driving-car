@@ -37,7 +37,6 @@ while running:
     
     screen.fill(screen_constants.SCREEN_COLOR)
     player.draw(screen)
-    road.draw(screen)
     pygame.display.flip()
 
     clock.tick(clock_constants.FPS) 
