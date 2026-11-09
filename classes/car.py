@@ -1,22 +1,25 @@
 import pygame
 import math
 
-from constants import player as player_constants
+from classes.sensor import Sensor
+from constants import car as car_constants
 
-class Player:
+class Car:
     def __init__(self, x: int, y: int, width: int, height: int):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
 
+        self.sensor = Sensor(self)
+
         self.speed = 0.0
         self.angle = 0.0
-        self.acceleration = player_constants.ACCELERATION
-        self.friction = player_constants.FRICTION
-        self.maximum_speed = player_constants.MAXIMUM_SPEED
+        self.acceleration = car_constants.ACCELERATION
+        self.friction = car_constants.FRICTION
+        self.maximum_speed = car_constants.MAXIMUM_SPEED
 
-        self.color = player_constants.PLAYER_COLOR
+        self.color = car_constants.CAR_COLOR
         self.start_position()
 
     def start_position(self):
@@ -43,7 +46,18 @@ class Player:
         if abs(self.speed) < self.friction:
             self.speed = 0.0
 
+        self.sensor.update()
+
+    def check_collision(self, track_mask):
+        rotated = pygame.transform.rotozoom(self.surf, math.degrees(self.angle), 1)
+        rect = rotated.get_rect(center = (self.x, self.y))
+        car_mask = pygame.mask.from_surface(rotated)
+        if track_mask.overlap(car_mask, rect.topleft) is not None:
+            return True
+
+
     def draw(self, screen):
         rotated = pygame.transform.rotozoom(self.surf, math.degrees(self.angle), 1)
         rect = rotated.get_rect(center = (self.x, self.y))
         screen.blit(rotated, rect)
+        self.sensor.draw(screen)

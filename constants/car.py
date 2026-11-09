@@ -1,4 +1,4 @@
-PLAYER_COLOR: str = "BLUE"
+CAR_COLOR: str = "BLUE"
 
 ACCELERATION: float = 0.2
 FRICTION: float = 0.095
