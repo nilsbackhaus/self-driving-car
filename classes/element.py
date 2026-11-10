@@ -26,16 +26,16 @@ class Element:
         self.output = np.maximum(0, inputs)
 
     def choose_game_input(self):
-        input = None
+        if len(self.car.sensor.readings) != self.car.sensor.ray_count:
+            return 0
 
         self.feed_forward(self.car.sensor.readings, self.input_weights, self.input_biases)
         self.activation_ReLU(self.output)
         self.feed_forward(self.output, self.hidden_layer1_weights, self.hidden_layer1_biases)
         self.activation_ReLU(self.output)
         self.feed_forward(self.output, self.hidden_layer2_weights, self.hidden_layer2_biases)
-        print(self.output)
         
-        return random.randint(0, network_constants.N_OF_POSSIBLE_OUTPUTS)
+        return int(np.argmax(self.output))
 
     def crossbreed(self):
         pass

@@ -12,6 +12,8 @@ class Car:
         self.height = height
 
         self.sensor = Sensor(self)
+        self.checkpoint_reached = 0
+        self.lap_count = 0
 
         self.speed = 0.0
         self.angle = 0.0
@@ -23,7 +25,7 @@ class Car:
         self.start_position()
 
     def start_position(self):
-        self.rect = (self.x, self.y, self.width, self.height)
+        self.rect = self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.surf.fill(pygame.Color(self.color))
         
@@ -31,7 +33,7 @@ class Car:
         self.x -= self.speed * math.sin(self.angle)
         self.y -= self.speed * math.cos(self.angle)
 
-        self.rect = (self.x, self.y, self.width, self.height)
+        self.rect = self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
         if self.speed > 0:
             self.speed -= self.friction
@@ -54,6 +56,19 @@ class Car:
         car_mask = pygame.mask.from_surface(rotated)
         if track_mask.overlap(car_mask, rect.topleft) is not None:
             return True
+
+    def check_checkpoint(self, checkpoints):
+        for checkpoint in checkpoints:
+            if self.rect.colliderect(checkpoint.rect):
+                if checkpoint.id > self.checkpoint_reached:
+                    self.checkpoint_reached = checkpoint.id
+
+                    if self.checkpoint_reached == len(checkpoints):
+                        self.checkpoint_reached = 1
+                        self.lap_count += 1
+
+                print(self.checkpoint_reached)
+                print(self.lap_count)
 
 
     def draw(self, screen):

@@ -2,7 +2,7 @@ import sys
 import pygame
 
 from classes.checkpoint import Checkpoint
-from classes.network import Element
+from classes.element import Element
 from constants import clock_c as clock_constants
 from constants import car_c as car_constants
 from constants import pygame_c as screen_constants
@@ -57,7 +57,8 @@ while running:
         element.car.update_position(track_mask)
         if element.car.check_collision(track_mask):
             print("Bad reward")
-        
+
+        element.car.check_checkpoint(checkpoints)
         element.car.draw(screen)
 
     for checkpoint in checkpoints:
