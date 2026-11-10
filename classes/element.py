@@ -4,7 +4,7 @@ import math
 import random
 
 from classes.car import Car
-from constants import network_c as network_constants
+from constants import element_c as network_constants
 
 class Element:
     def __init__(self):

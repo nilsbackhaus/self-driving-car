@@ -6,11 +6,12 @@ from classes.element import Element
 from constants import clock_c as clock_constants
 from constants import car_c as car_constants
 from constants import pygame_c as screen_constants
+from constants import training_c as training_constants
 
 pygame.init()
 
 elements = []
-for i in range(10):
+for i in range(training_constants.CARS):
     elements.append(Element())
 
 checkpoints = [
@@ -27,27 +28,12 @@ track_mask = pygame.mask.from_surface(track)
 
 clock = pygame.time.Clock()
 
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+training_timer = training_constants.DURATION
 
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        print(pygame.mouse.get_pos())
-
-    screen.fill(screen_constants.SCREEN_COLOR)
-
-    for checkpoint in checkpoints:
-        checkpoint.draw(screen)
-
-    screen.blit(track, (0, 0))
-
-    keys = pygame.key.get_pressed()
-
+def update_all_cars():
     for element in elements:
         new_angle = float(car_constants.ANGLE_INCREMENT * (element.car.speed / car_constants.TURNING_POWER))
-
+    
         match element.choose_game_input():
             case 0: # Forward
                 element.car.speed += element.car.acceleration
@@ -61,14 +47,30 @@ while running:
                 element.car.angle -= new_angle
             case 4: # Left
                 element.car.angle += new_angle
-
+    
     for i, element in enumerate(elements):
         element.car.update_position(track_mask)
         if element.car.check_collision(track_mask):
             elements.pop(i)
-
+    
         element.car.check_checkpoint(checkpoints)
         element.car.draw(screen)
+
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    training_timer -= 1
+    
+    progress = (training_constants.DURATION - training_timer) / (training_constants.DURATION * 100)
+    print(f"Training progress {progress:.0f}%")
+
+    screen.fill(screen_constants.SCREEN_COLOR)
+    screen.blit(track, (0, 0))
+
+    update_all_cars()
 
     pygame.display.flip()
     clock.tick(clock_constants.FPS) 
