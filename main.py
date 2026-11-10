@@ -1,8 +1,8 @@
 import sys
 import pygame
 
-from classes.network import *
-from classes.car import Car
+from classes.checkpoint import Checkpoint
+from classes.network import Element
 from constants import clock_c as clock_constants
 from constants import car_c as car_constants
 from constants import pygame_c as screen_constants
@@ -10,8 +10,10 @@ from constants import pygame_c as screen_constants
 pygame.init()
 
 elements = []
-for i in range(3):
+for i in range(250):
     elements.append(Element())
+
+checkpoints = [Checkpoint(100, 100, 100, 100, 1), Checkpoint(300, 250, 100, 100, 2)]
 
 screen = pygame.display.set_mode((screen_constants.WIDTH, screen_constants.HEIGHT), vsync = 1)
 pygame.display.set_caption("Self-driving Car")
@@ -26,6 +28,9 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        print(pygame.mouse.get_pos())
 
     screen.fill(screen_constants.SCREEN_COLOR)
     screen.blit(track, (0, 0))
@@ -54,6 +59,9 @@ while running:
             print("Bad reward")
         
         element.car.draw(screen)
+
+    for checkpoint in checkpoints:
+        checkpoint.draw(screen)
 
     pygame.display.flip()
     clock.tick(clock_constants.FPS) 

@@ -1,0 +1,1 @@
+CHECKPOINT_COLOR: str = "WHITE"
