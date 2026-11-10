@@ -2,7 +2,7 @@ import pygame
 import math
 
 from classes.sensor import Sensor
-from constants import car as car_constants
+from constants import car_c as car_constants
 
 class Car:
     def __init__(self, x: int, y: int, width: int, height: int):
@@ -27,7 +27,7 @@ class Car:
         self.surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.surf.fill(pygame.Color(self.color))
         
-    def update_position(self):
+    def update_position(self, track_mask):
         self.x -= self.speed * math.sin(self.angle)
         self.y -= self.speed * math.cos(self.angle)
 
@@ -46,7 +46,7 @@ class Car:
         if abs(self.speed) < self.friction:
             self.speed = 0.0
 
-        self.sensor.update()
+        self.sensor.update(track_mask)
 
     def check_collision(self, track_mask):
         rotated = pygame.transform.rotozoom(self.surf, math.degrees(self.angle), 1)
