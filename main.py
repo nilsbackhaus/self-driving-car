@@ -10,10 +10,14 @@ from constants import pygame_c as screen_constants
 pygame.init()
 
 elements = []
-for i in range(250):
+for i in range(10):
     elements.append(Element())
 
-checkpoints = [Checkpoint(100, 100, 100, 100, 1), Checkpoint(300, 250, 100, 100, 2)]
+checkpoints = [
+    Checkpoint(55, 280, 200, 10, 1), Checkpoint(230, 50, 10, 200, 2),
+    Checkpoint(400, 140, 10, 200, 3), Checkpoint(570, 320, 200, 10, 4),
+    Checkpoint(510, 400, 10, 200, 5), Checkpoint(251, 400, 10, 200, 6),
+]
 
 screen = pygame.display.set_mode((screen_constants.WIDTH, screen_constants.HEIGHT), vsync = 1)
 pygame.display.set_caption("Self-driving Car")
@@ -33,6 +37,10 @@ while running:
         print(pygame.mouse.get_pos())
 
     screen.fill(screen_constants.SCREEN_COLOR)
+
+    for checkpoint in checkpoints:
+        checkpoint.draw(screen)
+
     screen.blit(track, (0, 0))
 
     keys = pygame.key.get_pressed()
@@ -54,15 +62,13 @@ while running:
             case 4: # Left
                 element.car.angle += new_angle
 
+    for i, element in enumerate(elements):
         element.car.update_position(track_mask)
         if element.car.check_collision(track_mask):
-            print("Bad reward")
+            elements.pop(i)
 
         element.car.check_checkpoint(checkpoints)
         element.car.draw(screen)
-
-    for checkpoint in checkpoints:
-        checkpoint.draw(screen)
 
     pygame.display.flip()
     clock.tick(clock_constants.FPS) 

@@ -66,9 +66,8 @@ class Car:
                     if self.checkpoint_reached == len(checkpoints):
                         self.checkpoint_reached = 1
                         self.lap_count += 1
-
-                print(self.checkpoint_reached)
-                print(self.lap_count)
+                        print(f"Lap: {self.lap_count}")
+                
 
 
     def draw(self, screen):

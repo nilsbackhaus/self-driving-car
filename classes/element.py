@@ -8,7 +8,7 @@ from constants import network_c as network_constants
 
 class Element:
     def __init__(self):
-        self.car = Car(120, 400, 15, 30)
+        self.car = Car(120, 450, 15, 30)
 
         self.input_weights = (0.10 * np.random.randn(self.car.sensor.ray_count, network_constants.N_OF_HIDDEN_LAYER_NEURONS))
         self.input_biases = np.zeros((1, network_constants.N_OF_HIDDEN_LAYER_NEURONS))
