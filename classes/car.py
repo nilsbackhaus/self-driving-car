@@ -33,7 +33,7 @@ class Car:
         self.x -= self.speed * math.sin(self.angle)
         self.y -= self.speed * math.cos(self.angle)
 
-        self.rect = self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.rect = self.surf.get_rect(center=(self.x, self.y))
 
         if self.speed > 0:
             self.speed -= self.friction

@@ -51,10 +51,15 @@ def reward_train():
     global elements
 
     breeding_pool = generate_breeding_pool(elements, len(checkpoints))
-    elements = breed_new_population(breeding_pool)
+
+    if not breeding_pool:
+        elements = []
+        for _ in range(AMOUNT_OF_CARS):
+            elements.append(Element())
+    else:
+        elements = breed_new_population(breeding_pool)
+        mutate_population(elements)
     
-
-
 def train():
     training_timer: float = VALIDATED_TRAINING_DURATION
     last_progress: int = -1
@@ -70,6 +75,7 @@ def train():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+                return False
 
         training_timer -= float(1)
         
@@ -91,6 +97,8 @@ def train():
     else:
         print("Training was interrupted.")
 
+    return True
+
 def init():
     global checkpoints, elements
 
@@ -104,7 +112,9 @@ def init():
         elements.append(Element())
 
     for _ in range(TRAINING_ITERATION):
-        train()
+        if not train():
+            break
+
         reward_train()
 
     pygame.quit()

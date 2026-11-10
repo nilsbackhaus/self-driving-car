@@ -7,6 +7,20 @@ from classes.car import Car
 from constants.element_c import *
 from constants.training_c import *
 
+def mutation_chance(weights):
+    for i in range(len(weights)):
+        for j in range(len(weights[i])):
+            if random.random() < MUTATION_CHANCE:
+                weights[i][j] += random.uniform(-MUTATION_CHANGE, MUTATION_CHANGE)
+
+def random_select(weights1, weights2, child_weights):
+    for i in range(len(weights1)):
+        for j in range(len(weights1[i])):
+            if random.choice([0, 1]):
+                child_weights[i][j] = weights1[i][j]
+            else:
+                child_weights[i][j] = weights2[i][j]
+
 def generate_breeding_pool(elements: list, n_of_checkpoints: int):
     breeding_pool = []
     
@@ -28,26 +42,27 @@ def breed_new_population(breeding_pool: list):
 
     return new_population
 
-def random_select(weights1, weights2, child_weights):
-    for i in range(len(weights1)):
-        for j in range(len(weights1[i])):
-            if random.choice([0, 1]):
-                child_weights[i][j] = weights1[i][j]
-            else:
-                child_weights[i][j] = weights2[i][j]
+def mutate_population(elements: list):
+    for element in elements:
+        mutation_chance(element.input_weights)
+        mutation_chance(element.input_biases)
+        mutation_chance(element.hidden_layer1_weights)
+        mutation_chance(element.hidden_layer1_biases)
+        mutation_chance(element.hidden_layer2_weights)
+        mutation_chance(element.hidden_layer2_biases)
 
 class Element:
     def __init__(self):
         self.car = Car(120, 450, 15, 30)
 
         self.input_weights = (0.10 * np.random.randn(self.car.sensor.ray_count, N_OF_HIDDEN_LAYER_NEURONS))
-        self.input_biases = np.zeros((1, N_OF_HIDDEN_LAYER_NEURONS))
+        self.input_biases = np.full((1, N_OF_HIDDEN_LAYER_NEURONS), random.uniform(0.01, 0.1))
 
         self.hidden_layer1_weights = (0.10 * np.random.randn(N_OF_HIDDEN_LAYER_NEURONS, N_OF_HIDDEN_LAYER_NEURONS))
-        self.hidden_layer1_biases = np.zeros((1, N_OF_HIDDEN_LAYER_NEURONS))
+        self.hidden_layer1_biases = np.full((1, N_OF_HIDDEN_LAYER_NEURONS), random.uniform(0.01, 0.1))
 
         self.hidden_layer2_weights = (0.10 * np.random.randn(N_OF_HIDDEN_LAYER_NEURONS, N_OF_POSSIBLE_OUTPUTS))
-        self.hidden_layer2_biases = np.zeros((1, N_OF_POSSIBLE_OUTPUTS))
+        self.hidden_layer2_biases = np.full((1, N_OF_POSSIBLE_OUTPUTS), random.uniform(0.01, 0.1))
 
     def feed_forward(self, inputs: list[float] | np.ndarray, weights: np.ndarray, biases: np.ndarray):
         self.output = np.dot(inputs, weights) + biases
