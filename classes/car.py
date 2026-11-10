@@ -2,7 +2,7 @@ import pygame
 import math
 
 from classes.sensor import Sensor
-from constants import car_c as car_constants
+from constants.car_c import *
 
 class Car:
     def __init__(self, x: int, y: int, width: int, height: int):
@@ -17,11 +17,11 @@ class Car:
 
         self.speed = 0.0
         self.angle = 0.0
-        self.acceleration = car_constants.ACCELERATION
-        self.friction = car_constants.FRICTION
-        self.maximum_speed = car_constants.MAXIMUM_SPEED
+        self.acceleration = ACCELERATION
+        self.friction = FRICTION
+        self.maximum_speed = MAXIMUM_SPEED
 
-        self.color = car_constants.CAR_COLOR
+        self.color = CAR_COLOR
         self.start_position()
 
     def start_position(self):
@@ -29,7 +29,7 @@ class Car:
         self.surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.surf.fill(pygame.Color(self.color))
         
-    def update_position(self, track_mask):
+    def update_position(self, track_mask: pygame.Mask):
         self.x -= self.speed * math.sin(self.angle)
         self.y -= self.speed * math.cos(self.angle)
 
@@ -50,27 +50,26 @@ class Car:
 
         self.sensor.update(track_mask)
 
-    def check_collision(self, track_mask):
+    def check_collision(self, track_mask: pygame.Mask):
         rotated = pygame.transform.rotozoom(self.surf, math.degrees(self.angle), 1)
         rect = rotated.get_rect(center = (self.x, self.y))
         car_mask = pygame.mask.from_surface(rotated)
         if track_mask.overlap(car_mask, rect.topleft) is not None:
             return True
 
-    def check_checkpoint(self, checkpoints):
+    def check_checkpoint(self, checkpoints: list):
         for checkpoint in checkpoints:
             if self.rect.colliderect(checkpoint.rect):
                 if checkpoint.id == 1 and self.checkpoint_reached == len(checkpoints):
                     self.lap_count += 1
                     self.checkpoint_reached = 1
-                    print(f"Lap count: {self.lap_count}")
                 elif checkpoint.id == (self.checkpoint_reached + 1):
                     self.checkpoint_reached = checkpoint.id
                 
 
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface):
         rotated = pygame.transform.rotozoom(self.surf, math.degrees(self.angle), 1)
         rect = rotated.get_rect(center = (self.x, self.y))
         screen.blit(rotated, rect)
-        self.sensor.draw(screen)
+        # self.sensor.draw(screen)

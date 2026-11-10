@@ -1,38 +1,27 @@
-import sys
-import pygame
+import pygame, sys
 
 from classes.checkpoint import Checkpoint
-from classes.element import Element
-from constants import clock_c as clock_constants
-from constants import car_c as car_constants
-from constants import pygame_c as screen_constants
-from constants import training_c as training_constants
+from classes.element import *
+
+from utils.time import *
+from constants.clock_c import *
+from constants.car_c import *
+from constants.pygame_c import * 
+from constants.training_c import *
 
 pygame.init()
 
-elements = []
-for i in range(training_constants.CARS):
-    elements.append(Element())
-
-checkpoints = [
-    Checkpoint(55, 280, 200, 10, 1), Checkpoint(230, 50, 10, 200, 2),
-    Checkpoint(400, 140, 10, 200, 3), Checkpoint(570, 320, 200, 10, 4),
-    Checkpoint(510, 400, 10, 200, 5), Checkpoint(251, 400, 10, 200, 6),
-]
-
-screen = pygame.display.set_mode((screen_constants.WIDTH, screen_constants.HEIGHT), vsync = 1)
-pygame.display.set_caption("Self-driving Car")
-
+py_clock = pygame.time.Clock()
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), vsync=1)
 track = pygame.image.load("assets/track.png").convert_alpha()
 track_mask = pygame.mask.from_surface(track)
 
-clock = pygame.time.Clock()
-
-training_timer = training_constants.DURATION
+checkpoints = []
+elements = []
 
 def update_all_cars():
     for element in elements:
-        new_angle = float(car_constants.ANGLE_INCREMENT * (element.car.speed / car_constants.TURNING_POWER))
+        new_angle = float(ANGLE_INCREMENT * (element.car.speed / TURNING_POWER))
     
         match element.choose_game_input():
             case 0: # Forward
@@ -48,32 +37,78 @@ def update_all_cars():
             case 4: # Left
                 element.car.angle += new_angle
     
-    for i, element in enumerate(elements):
+    for element in elements[:]:
         element.car.update_position(track_mask)
+
         if element.car.check_collision(track_mask):
-            elements.pop(i)
-    
+            elements.remove(element)
+            continue
+
         element.car.check_checkpoint(checkpoints)
         element.car.draw(screen)
 
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+def reward_train():
+    global elements
+
+    breeding_pool = generate_breeding_pool(elements, len(checkpoints))
+    elements = breed_new_population(breeding_pool)
+    
+
+
+def train():
+    training_timer: float = VALIDATED_TRAINING_DURATION
+    last_progress: int = -1
+    running: bool = True
+
+    while running:
+        if training_timer < 0:
             running = False
 
-    training_timer -= 1
-    
-    progress = (training_constants.DURATION - training_timer) / (training_constants.DURATION * 100)
-    print(f"Training progress {progress:.0f}%")
+        if not elements:
+            running = False
 
-    screen.fill(screen_constants.SCREEN_COLOR)
-    screen.blit(track, (0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-    update_all_cars()
+        training_timer -= float(1)
+        
+        progress = int((VALIDATED_TRAINING_DURATION - training_timer) / VALIDATED_TRAINING_DURATION * 100)
+        if progress != last_progress:
+            print(f"Training progress: {progress}%")
+            last_progress = progress
 
-    pygame.display.flip()
-    clock.tick(clock_constants.FPS) 
+        screen.fill(SCREEN_COLOR)
+        screen.blit(track, (0, 0))
 
-pygame.quit()
-sys.exit()
+        update_all_cars()
+
+        pygame.display.flip()
+        py_clock.tick(FPS)
+
+    if last_progress == 100:
+        print(f"Training has completed. Trained for {TRAINING_DURATION} minute(s).")
+    else:
+        print("Training was interrupted.")
+
+def init():
+    global checkpoints, elements
+
+    checkpoints = [
+        Checkpoint(55, 280, 200, 10, 1), Checkpoint(230, 50, 10, 200, 2),
+        Checkpoint(400, 140, 10, 200, 3), Checkpoint(570, 320, 200, 10, 4),
+        Checkpoint(510, 400, 10, 200, 5), Checkpoint(251, 400, 10, 200, 6),
+    ]
+
+    for _ in range(AMOUNT_OF_CARS):
+        elements.append(Element())
+
+    for _ in range(TRAINING_ITERATION):
+        train()
+        reward_train()
+
+    pygame.quit()
+    sys.exit()
+
+init()
+

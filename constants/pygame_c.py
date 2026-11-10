@@ -1,4 +1,4 @@
-SCREEN_COLOR: str = "BLACK"
+SCREEN_COLOR: str = "GREY"
 
-WIDTH: int = 800
-HEIGHT: int = 600
+SCREEN_WIDTH: int = 800
+SCREEN_HEIGHT: int = 600

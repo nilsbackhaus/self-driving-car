@@ -2,24 +2,24 @@ import pygame
 import math
 
 from utils.math import *
-from constants import sensor_c as sensor_constants
+from constants.sensor_c import *
 
 class Sensor:
     def __init__(self, car):
         self.car = car
-        self.ray_count = sensor_constants.RAY_COUNT
-        self.ray_length = sensor_constants.RAY_LENGTH
-        self.ray_spread = sensor_constants.RAY_SPREAD
+        self.ray_count = RAY_COUNT
+        self.ray_length = RAY_LENGTH
+        self.ray_spread = RAY_SPREAD
 
         self.rays = []
         self.readings = []
 
-    def update(self, track_mask):
+    def update(self, track_mask: pygame.Mask):
         self.rays = []
         self.readings = []
         self.cast_rays(track_mask)
 
-    def cast_rays(self, track_mask):
+    def cast_rays(self, track_mask: pygame.Mask):
         for i in range(self.ray_count):
             ray_angle = lerp(
                 self.ray_spread / 2,
@@ -34,7 +34,7 @@ class Sensor:
                 self.car.y - math.cos(ray_angle) * self.ray_length
                 )
 
-            for i in range(0, int(self.ray_length), sensor_constants.PIXEL_PER_STEP):
+            for i in range(0, int(self.ray_length), PIXEL_PER_STEP):
                 point = ((start[0] + direction[0] * i), (start[1] + direction[1] * i))
                 reading = 0
 
@@ -51,6 +51,6 @@ class Sensor:
             self.rays.append((start, end))
             self.readings.append(reading)
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface):
         for i in range(self.ray_count):
-            pygame.draw.line(screen, sensor_constants.RAY_COLOR, self.rays[i][0], self.rays[i][1], 2)
+            pygame.draw.line(screen, RAY_COLOR, self.rays[i][0], self.rays[i][1], 2)

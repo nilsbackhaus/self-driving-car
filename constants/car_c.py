@@ -1,8 +1,9 @@
 CAR_COLOR: str = "BLUE"
 
+TURNING_POWER: int = 3
+
 ACCELERATION: float = 0.2
 FRICTION: float = 0.095
 MAXIMUM_SPEED: float = 2.0
 ANGLE_INCREMENT: float = 0.03
 
-TURNING_POWER: int = 3
