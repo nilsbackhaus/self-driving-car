@@ -26,7 +26,9 @@ def generate_breeding_pool(elements: list, n_of_checkpoints: int):
     
     for element in elements:
         fitness = element.car.lap_count * (n_of_checkpoints - 1) + element.car.checkpoint_reached
-        for _ in range(math.floor(fitness / FITNESS_PER_POOL_ENTRY)):
+        if fitness == 0:
+            fitness = element.car.first_checkpoint_progress
+        for _ in range(math.floor(fitness * 100 / FITNESS_PER_POOL_ENTRY)):
             breeding_pool.append(element)
 
     return breeding_pool

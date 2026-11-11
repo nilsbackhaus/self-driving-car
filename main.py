@@ -18,6 +18,7 @@ track_mask = pygame.mask.from_surface(track)
 
 checkpoints = []
 elements = []
+crashed_elements = []
 
 def update_all_cars():
     for element in elements:
@@ -39,8 +40,15 @@ def update_all_cars():
     
     for element in elements[:]:
         element.car.update_position(track_mask)
+        element.car.update_first_checkpoint_progress(checkpoints[0])
 
-        if element.car.check_collision(track_mask):
+        if abs(element.car.speed) < 0.01:
+            element.car.stopped_frames += 1
+        else:
+            element.car.stopped_frames = 0
+
+        if element.car.check_collision(track_mask) or element.car.stopped_frames >= 3 * FPS:
+            crashed_elements.append(element)
             elements.remove(element)
             continue
 
@@ -50,7 +58,8 @@ def update_all_cars():
 def reward_train():
     global elements
 
-    breeding_pool = generate_breeding_pool(elements, len(checkpoints))
+    breeding_pool = generate_breeding_pool(elements + crashed_elements, len(checkpoints))
+    crashed_elements.clear()
 
     if not breeding_pool:
         elements = []
@@ -76,6 +85,9 @@ def train():
             if event.type == pygame.QUIT:
                 running = False
                 return False
+
+            # if event.type == pygame.MOUSEBUTTONDOWN:
+            #    print(pygame.mouse.get_pos())
 
         training_timer -= float(1)
         

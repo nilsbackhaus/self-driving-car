@@ -8,12 +8,16 @@ class Car:
     def __init__(self, x: int, y: int, width: int, height: int):
         self.x = x
         self.y = y
+        self.start_x = x
+        self.start_y = y
         self.width = width
         self.height = height
 
         self.sensor = Sensor(self)
         self.checkpoint_reached = 0
         self.lap_count = 0
+        self.first_checkpoint_progress = 0.0
+        self.stopped_frames = 0
 
         self.speed = 0.0
         self.angle = 0.0
@@ -65,6 +69,17 @@ class Car:
                     self.checkpoint_reached = 1
                 elif checkpoint.id == (self.checkpoint_reached + 1):
                     self.checkpoint_reached = checkpoint.id
+
+    def update_first_checkpoint_progress(self, checkpoint):
+        if self.checkpoint_reached:
+            return
+
+        target = checkpoint.rect.center
+        start_distance = math.hypot(self.start_x - target[0], self.start_y - target[1])
+        distance = math.hypot(self.x - target[0], self.y - target[1])
+        if start_distance:
+            progress = max(0.0, min(0.99, 1 - distance / start_distance))
+            self.first_checkpoint_progress = max(self.first_checkpoint_progress, progress)
                 
 
 
